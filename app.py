@@ -20,14 +20,17 @@ def kids(news_id):
         pass
 
 
-def read_news(news_id):
+def read_news(news_id, count, total):
     res = get_item(news_id)
     if res['type'] == 'story':
-        print('****', res['title'])
-        print('***', res['url'])
+        try:
+            print('****', res['title'])
+            print('***', res['url'])
+        except:
+            pass
         print('https://news.ycombinator.com/item?id={}'.format(news_id))
-        end = input('read?')
-        if end == 'y':
+        end = input('{0}/{1} next? >'.format(count, total))
+        if end == 'n':
             try:
                 for reply in res['kids']:
                     kids(reply)
@@ -38,8 +41,12 @@ def read_news(news_id):
 
 
 def main():
-    for news_id in get_item('top_stories'):
-        read_news(news_id)
+    top = get_item('top_stories')
+    count = 0
+    total = len(top)
+    for news_id in top:
+        count += 1
+        read_news(news_id, count, total)
 
 
 main()
