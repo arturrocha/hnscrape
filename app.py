@@ -1,5 +1,7 @@
 import requests
 import time
+import newspaper
+from newspaper import Article
 
 
 def get_item(news_id):
@@ -24,20 +26,31 @@ def read_news(news_id, count, total):
     res = get_item(news_id)
     if res['type'] == 'story':
         try:
+            print('*******************************************************')
             print('****', res['title'])
+            print('*******************************************************')
             print('***', res['url'])
-        except:
-            pass
-        print('https://news.ycombinator.com/item?id={}'.format(news_id))
-        end = input('{0}/{1} next? >'.format(count, total))
-        if end == 'n':
-            try:
-                for reply in res['kids']:
-                    kids(reply)
-            except KeyError:
-                pass
-        else:
-            pass
+        except Exception as e:
+            print(e)
+        print('*** https://news.ycombinator.com/item?id={}'.format(news_id))
+        request = input('{0}/{1} next? >'.format(count, total))
+        if request == 'n':
+            print('****************')
+            article = Article(res['url'])
+            article.download()
+            article.parse()
+            print(article.text)
+            article.nlp()
+            print('***', article.keywords)
+            print('****************')
+            comments = input('{0}/{1} read comments? Def N >'.format(count, total))
+            if comments == 'y':
+                try:
+                    for reply in res['kids']:
+                        print('*>')
+                        kids(reply)
+                except KeyError:
+                    pass
 
 
 def main():
